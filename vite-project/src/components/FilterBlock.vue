@@ -43,10 +43,6 @@
         />
       </div>
     </div>
-    {{ title }}
-    {{ priceFrom }}
-    {{ priceTo }}
-    {{ isShowSpecialOffers }}
   </aside>
 </template>
 

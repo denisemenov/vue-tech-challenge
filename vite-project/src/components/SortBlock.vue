@@ -1,24 +1,40 @@
 <template>
-  <aside
+  <fieldset
     class="flex flex-row gap-8"
-    aria-role="radiogroup"
-    aria-label="Sorting Options"
+    role="radiogroup"
+    aria-labelledby="sortingOptionsLabel"
+    aria-describedby="sortingOptionsDescription"
   >
-    <div
-      v-for="item in sortOptions"
-      :key="item"
-      aria-role="radio"
-      :aria-checked="isSortBy === item"
-      class="cursor-pointer"
-      @click="setSortBy(item)"
-    >
-      {{ item }}
-      <span v-if="isSortBy === item">
-        <span v-if="isSortAsc"> ⬆️ </span>
-        <span v-else> ⬇️ </span>
-      </span>
+    <legend id="sortingOptionsLabel" class="sr-only">Sorting Options</legend>
+    <span id="sortingOptionsDescription" class="sr-only">
+      Use the up and down arrow keys to change the sorting direction. Use the
+      left and right arrow keys to change the sorting option.
+    </span>
+
+    <div v-for="item in sortOptions" :key="item" class="relative">
+      <input
+        class="peer sr-only"
+        type="radio"
+        name="sortOptions"
+        :id="item"
+        :value="item"
+        v-model="sortBy"
+        @keydown.up.prevent="setSortDirection(true)"
+        @keydown.down.prevent="setSortDirection(false)"
+      />
+      <label
+        :for="item"
+        class="cursor-pointer px-2 py-1 rounded peer-[:focus-visible]:outline"
+        @click="setSortDirection(!isSortAsc)"
+      >
+        {{ item }}
+        <span v-if="sortBy === item">
+          <span v-if="isSortAsc"> ⬆️ </span>
+          <span v-else> ⬇️ </span>
+        </span>
+      </label>
     </div>
-  </aside>
+  </fieldset>
 </template>
 
 <script setup lang="ts">
@@ -27,18 +43,25 @@ import { useStore } from "vuex";
 
 const store = useStore();
 
-const isSortBy = computed(() => store.state.isSortBy);
 const isSortAsc = computed(() => store.state.isSortAsc);
 const sortOptions = ["Rating", "Title", "Price"];
 
-const setSortBy = (sortBy: string) => {
-  if (sortBy !== store.state.isSortBy) {
-    store.commit("setSortAsc", sortBy !== "Rating");
-  } else {
-    store.commit("setSortAsc", !store.state.isSortAsc);
-  }
+const sortBy = computed({
+  get: () => store.state.isSortBy,
+  set: (sortBy) => {
+    if (sortBy !== store.state.isSortBy) {
+      store.commit("setSortAsc", sortBy !== "Rating");
+    } else {
+      store.commit("setSortAsc", !store.state.isSortAsc);
+    }
 
-  store.commit("setSortBy", sortBy);
+    store.commit("setSortBy", sortBy);
+    store.commit("setFilteredActivities");
+  },
+});
+
+const setSortDirection = (direction: boolean) => {
+  store.commit("setSortAsc", direction);
   store.commit("setFilteredActivities");
 };
 </script>

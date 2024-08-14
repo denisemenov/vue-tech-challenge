@@ -1,12 +1,23 @@
 <template>
-  <div v-if="isLoading">Loading...</div>
+  <div
+    class="col-span-3 text-center font-black text-3xl"
+    v-if="isLoading"
+  >
+    Loading list of activities...
+  </div>
+
   <div
     v-else
-    class="grid grid-cols-3 gap-8"
+    class="grid grid-cols-3 gap-8 self-start items-start"
     aria-label="Activity List"
-    aria-role="list"
+    role="list"
   >
-    <div v-if="!filteredActivities.length">No activities found</div>
+    <div
+      class="col-span-3 text-center font-black text-3xl self-center"
+      v-if="!filteredActivities.length"
+    >
+      No activities found
+    </div>
 
     <ActivityItem
       v-for="(item, index) in filteredActivities"
